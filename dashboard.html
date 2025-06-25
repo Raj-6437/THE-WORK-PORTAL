@@ -1,0 +1,1379 @@
+<!-- Replace the entire dashboard.html with this code -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desync - Freelancing Platform</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1abc9c;
+            --primary-dark: #16a085;
+            --secondary: #2c3e50;
+            --light: #ecf0f1;
+            --dark: #34495e;
+            --gray: #7f8c8d;
+            --light-gray: #f4f7fc;
+            --white: #ffffff;
+            --shadow: 0 2px 10px rgba(0,0,0,0.1);
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-gray);
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        .dashboard {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Sidebar Styles */
+        .sidebar {
+            width: 280px;
+            background: var(--secondary);
+            color: var(--light);
+            display: flex;
+            flex-direction: column;
+            padding: 25px 20px;
+            transition: width 0.3s ease;
+            position: fixed;
+            height: 100vh;
+            z-index: 1000;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 30px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo i {
+            font-size: 2rem;
+        }
+        
+        .nav-menu ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .nav-menu ul li {
+            margin-bottom: 12px;
+            border-radius: 6px;
+            transition: var(--transition);
+        }
+        
+        .nav-menu ul li:hover {
+            background-color: rgba(26, 188, 156, 0.2);
+        }
+        
+        .nav-menu ul li.active {
+            background-color: var(--primary);
+            font-weight: 600;
+        }
+        
+        .nav-menu ul li a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 15px;
+            color: inherit;
+            font-size: 1rem;
+            text-decoration: none;
+        }
+        
+        .nav-menu ul li i {
+            min-width: 24px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 20px 0;
+            margin-top: auto;
+            border-top: 1px solid rgba(236, 240, 241, 0.2);
+        }
+        
+        .user-profile img {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--primary);
+        }
+        
+        .user-info {
+            display: flex;
+            flex-direction: column;
+            font-size: 0.9rem;
+        }
+        
+        .user-name {
+            font-weight: 600;
+            color: var(--light);
+        }
+        
+        .user-role {
+            color: var(--gray);
+            font-size: 0.8rem;
+        }
+        
+        /* Main Content Styles */
+        .main-content {
+            flex-grow: 1;
+            margin-left: 280px;
+            width: calc(100% - 280px);
+            display: flex;
+            flex-direction: column;
+            background: var(--white);
+            min-height: 100vh;
+        }
+        
+        .top-bar {
+            background: var(--white);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            border-bottom: 1px solid #e1e8f0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .top-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .notifications {
+            position: relative;
+            font-size: 1.3rem;
+            color: var(--gray);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .notifications:hover {
+            color: var(--primary);
+        }
+        
+        .notification-count {
+            position: absolute;
+            top: -6px;
+            right: -8px;
+            background: #e74c3c;
+            color: white;
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 50%;
+            font-weight: 700;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--primary);
+            cursor: pointer;
+        }
+        
+        .content-area {
+            padding: 30px;
+            flex-grow: 1;
+            background: var(--light-gray);
+        }
+        
+        /* Tab Content Styles */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .page-header {
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .page-header h1 {
+            font-size: 2rem;
+            color: var(--secondary);
+        }
+        
+        /* Work Cards */
+        .works-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .work-card {
+            background: var(--white);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+        
+        .work-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .work-card h3 {
+            color: var(--secondary);
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .work-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 0.85rem;
+        }
+        
+        .work-category {
+            background: rgba(26, 188, 156, 0.1);
+            color: #1abc9c;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+        
+        .work-author {
+            color: var(--gray);
+            font-size: 0.85rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .work-author img {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+        }
+        
+        .work-description {
+            margin-bottom: 15px;
+            color: var(--dark);
+            font-size: 0.95rem;
+        }
+        
+        .work-files {
+            margin-bottom: 15px;
+        }
+        
+        .work-files strong {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .work-files a {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 0.85rem;
+            margin-right: 10px;
+            margin-bottom: 5px;
+            padding: 4px 8px;
+            background: rgba(26, 188, 156, 0.1);
+            border-radius: 4px;
+            transition: var(--transition);
+        }
+        
+        .work-files a:hover {
+            background: rgba(26, 188, 156, 0.2);
+        }
+        
+        .work-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 15px;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background: rgba(26, 188, 156, 0.1);
+        }
+        
+        /* Form Styles */
+        .form-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: var(--white);
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--dark);
+            font-size: 0.95rem;
+        }
+        
+        input[type='text'],
+        textarea,
+        input[type='email'],
+        input[type='file'],
+        select {
+            width: 100%;
+            padding: 12px 15px;
+            border-radius: 6px;
+            border: 1.5px solid #e1e8f0;
+            font-size: 0.95rem;
+            transition: var(--transition);
+        }
+        
+        input[type='text']:focus,
+        textarea:focus,
+        select:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(26, 188, 156, 0.2);
+        }
+        
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        button[type='submit'] {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: var(--transition);
+            width: 100%;
+        }
+        
+        button[type='submit']:hover {
+            background: var(--primary-dark);
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--gray);
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+            color: #e1e8f0;
+            margin-bottom: 20px;
+        }
+        
+        .empty-state h3 {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+        
+        /* Bid Management */
+        .bid-management {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 3px solid #1abc9c;
+        }
+        
+        .bid-management h4 {
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        
+        .bid-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .bid-item {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .bid-info {
+            flex: 1;
+        }
+        
+        .bid-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 0.8rem;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .badge-pending {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+        
+        .badge-accepted {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        
+        /* Invoices Styles */
+        .invoices-container {
+            background: var(--white);
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+        }
+        
+        .invoice-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .invoice-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .invoice-title {
+            font-size: 1.3rem;
+            color: var(--secondary);
+        }
+        
+        .invoice-id {
+            font-weight: 600;
+        }
+        
+        .invoice-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .invoice-detail {
+            margin-bottom: 10px;
+        }
+        
+        .invoice-detail strong {
+            display: block;
+            margin-bottom: 3px;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+        
+        .invoice-status {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+        
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .status-paid {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        /* Chat Modal */
+        #chat-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            z-index: 2000;
+        }
+        
+        .chat-modal-content {
+            background-color: #fff;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .close-chat {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 28px;
+            font-weight: bold;
+            color: #aaa;
+            cursor: pointer;
+        }
+        
+        .chat-header {
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 15px;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .message {
+            max-width: 80%;
+            padding: 12px 15px;
+            border-radius: 18px;
+        }
+        
+        .message.sent {
+            background: #daf8cb;
+            align-self: flex-end;
+            border-bottom-right-radius: 0;
+        }
+        
+        .message.received {
+            background: #f0f0f0;
+            align-self: flex-start;
+            border-bottom-left-radius: 0;
+        }
+        
+        .message-time {
+            font-size: 0.75rem;
+            color: #888;
+            margin-top: 5px;
+            text-align: right;
+        }
+        
+        .chat-input {
+            display: flex;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+        
+        #chat-message-input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 24px;
+            outline: none;
+        }
+        
+        #chat-send-btn {
+            margin-left: 10px;
+            padding: 12px 20px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 24px;
+            cursor: pointer;
+        }
+        
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 80px;
+                padding: 20px 10px;
+                align-items: center;
+            }
+            
+            .logo span, 
+            .nav-menu ul li a span,
+            .user-info {
+                display: none;
+            }
+            
+            .logo i {
+                font-size: 1.8rem;
+            }
+            
+            .nav-menu ul li a {
+                justify-content: center;
+                padding: 12px;
+            }
+            
+            .user-profile {
+                justify-content: center;
+                padding: 15px 0;
+            }
+            
+            .main-content {
+                margin-left: 80px;
+                width: calc(100% - 80px);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .works-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .top-bar {
+                padding: 15px 20px;
+            }
+            
+            .content-area {
+                padding: 20px;
+            }
+            
+            .form-container {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fas fa-rocket"></i>
+                <span>Desync</span>
+            </div>
+            <nav class="nav-menu">
+                <ul>
+                    <li class="active" data-tab="home">
+                        <a href="#">
+                            <i class="fas fa-home"></i>
+                            <span>Home</span>
+                        </a>
+                    </li>
+                    <li data-tab="discover">
+                        <a href="#">
+                            <i class="fas fa-compass"></i>
+                            <span>Discover</span>
+                        </a>
+                    </li>
+                    <li data-tab="work">
+                        <a href="#">
+                            <i class="fas fa-briefcase"></i>
+                            <span>My Work</span>
+                        </a>
+                    </li>
+                    <li data-tab="invoices">
+                        <a href="#">
+                            <i class="fas fa-file-invoice-dollar"></i>
+                            <span>Invoices</span>
+                        </a>
+                    </li>
+                    <li data-tab="upload">
+                        <a href="#">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <span>Upload Work</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-bar">
+                <div class="top-actions">
+                    <div class="notifications">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-count">3</span>
+                    </div>
+                    <img src="{% if user['profile_photo'] %}{{ url_for('profile_photo', filename=user['profile_photo']) }}{% else %}https://via.placeholder.com/40{% endif %}" 
+                         alt="User" class="user-avatar">
+                </div>
+            </header>
+
+            <div class="content-area">
+                <!-- Home Tab -->
+                <div id="home" class="tab-content active">
+                    <div class="page-header">
+                        <h1>Dashboard Overview</h1>
+                    </div>
+                    
+                    <div class="user-profile-card">
+                        <div class="profile-photo-container">
+                            {% if user['profile_photo'] %}
+                                <img src="{{ url_for('profile_photo', filename=user['profile_photo']) }}" alt="Profile Photo">
+                            {% else %}
+                                <div style="background: #eee; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fas fa-user" style="font-size: 3rem; color: #ccc;"></i>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="profile-details">
+                            <h2>{{ user['username'] }}</h2>
+                            <div class="profile-info">
+                                <p><strong>Email:</strong> {{ user['email'] }}</p>
+                                <p><strong>Profession:</strong> {{ user['profession'] }}</p>
+                                <p><strong>Education:</strong> {{ user['education'] }}</p>
+                                <p><strong>Member Since:</strong> {{ user['created_at'].split()[0] }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Discover Tab -->
+                <div id="discover" class="tab-content">
+                    <div class="page-header">
+                        <h1>Discover Work</h1>
+                    </div>
+                    
+                    <div class="works-grid" id="works-list">
+                        {% if works %}
+                            {% for work in works %}
+                            <div class="work-card">
+                                <h3>{{ work['title'] }}</h3>
+                                <div class="work-meta">
+                                    <span class="work-category">{{ work['category'] }}</span>
+                                    <span class="work-author">
+                                        {% if work['profile_photo'] %}
+                                        <img src="{{ url_for('profile_photo', filename=work['profile_photo']) }}" alt="Author">
+                                        {% else %}
+                                        <div style="width: 24px; height: 24px; border-radius: 50%; background: #eee; display: flex; align-items: center; justify-content: center;">
+                                            <i class="fas fa-user"></i>
+                                        </div>
+                                        {% endif %}
+                                        <span>{{ work['username'] }}</span>
+                                    </span>
+                                </div>
+                                <div class="project-details">
+                                    {% if work['business_name'] %}
+                                    <p><strong>Business:</strong> {{ work['business_name'] }}</p>
+                                    {% endif %}
+                                    
+                                    {% if work['contact_email'] %}
+                                    <p><strong>Contact:</strong> {{ work['contact_email'] }}</p>
+                                    {% endif %}
+                                    
+                                    {% if work['budget'] %}
+                                    <p><strong>Budget:</strong> ${{ work['budget'] }}</p>
+                                    {% endif %}
+                                    
+                                    {% if work['deadline'] %}
+                                    <p><strong>Deadline:</strong> {{ work['deadline'] }}</p>
+                                    {% endif %}
+                                    
+                                    {% if work['duration'] %}
+                                    <p><strong>Duration:</strong> {{ work['duration'] }} days</p>
+                                    {% endif %}
+                                </div>
+                                <p class="work-description">{{ work['description'] }}</p>
+                                
+                                {% if work['file_path'] %}
+                                <div class="work-files">
+                                    <strong>Attachments:</strong>
+                                    {% for file in work['file_path'].split(',') %}
+                                    <a href="{{ url_for('uploaded_file', filename=file) }}" target="_blank">
+                                        <i class="fas fa-paperclip"></i> {{ file }}
+                                    </a>
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                                
+                                <div class="work-actions">
+                                    <button class="btn btn-outline" onclick="openBidModal({{ work['id'] }})">Place Bid</button>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="empty-state">
+                                <i class="fas fa-folder-open"></i>
+                                <h3>No Works Available</h3>
+                                <p>There are currently no works to display. Check back later or upload your own work!</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Work Tab -->
+                <div id="work" class="tab-content">
+                    <div class="page-header">
+                        <h1>My Projects</h1>
+                        <button class="btn btn-primary" onclick="document.getElementById('upload').classList.add('active'); 
+                            document.querySelector('[data-tab=\"upload\"]').click();">
+                            <i class="fas fa-plus"></i> New Project
+                        </button>
+                    </div>
+                    
+                    {% if user_works %}
+                    <div class="works-grid">
+                        {% for work in user_works %}
+                        <div class="work-card">
+                            <h3>{{ work['title'] }}</h3>
+                            
+                            <!-- Status badge -->
+                            <div class="status-badge">
+                                {% if work['status'] == 'completed' %}
+                                <span class="badge badge-accepted">Completed</span>
+                                {% elif work['status'] == 'in_progress' %}
+                                <span class="badge badge-accepted">In Progress</span>
+                                {% else %}
+                                <span class="badge badge-pending">Open for Bids</span>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Project details -->
+                            <div class="project-details">
+                                <p><strong>Category:</strong> {{ work['category'] }}</p>
+                                
+                                {% if work['business_name'] %}
+                                <p><strong>Business:</strong> {{ work['business_name'] }}</p>
+                                {% endif %}
+                                
+                                {% if work['contact_email'] %}
+                                <p><strong>Contact Email:</strong> {{ work['contact_email'] }}</p>
+                                {% endif %}
+                                
+                                {% if work['budget'] %}
+                                <p><strong>Budget:</strong> ${{ work['budget'] }}</p>
+                                {% endif %}
+                                
+                                {% if work['deadline'] %}
+                                <p><strong>Deadline:</strong> {{ work['deadline'] }}</p>
+                                {% endif %}
+                                
+                                <p><strong>Uploaded:</strong> {{ work['created_at'].split()[0] }}</p>
+                            </div>
+                            
+                            <!-- Bid management section -->
+                            <div class="bid-management">
+                                <h4>Bids Received</h4>
+                                {% if bids[work.id] %}
+                                <ul class="bid-list">
+                                    {% for bid in bids[work.id] %}
+                                    <li class="bid-item">
+                                        <div class="bid-info">
+                                            <strong>{{ bid.username }}</strong> - ${{ bid.amount }}
+                                            <span class="badge {% if bid.status == 'accepted' %}badge-accepted{% else %}badge-pending{% endif %}">
+                                                {{ bid.status }}
+                                            </span>
+                                        </div>
+                                        <div class="bid-actions">
+                                            {% if bid.status == 'pending' %}
+                                            <button class="btn btn-sm btn-primary" 
+                                                    onclick="acceptBid({{ bid.id }})">
+                                                Accept
+                                            </button>
+                                            {% endif %}
+                                            <button class="btn btn-sm btn-outline" 
+                                                    onclick="openChatModal('{{ bid.username }}', {{ work.id }})">
+                                                Message
+                                            </button>
+                                        </div>
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                                {% else %}
+                                <p>No bids yet</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-briefcase"></i>
+                        <h3>No Active Projects</h3>
+                        <p>You don't have any active projects yet. Start by uploading your work!</p>
+                        <button class="btn btn-primary" style="margin-top: 20px;" 
+                            onclick="document.getElementById('upload').classList.add('active'); 
+                            document.querySelector('[data-tab=\"upload\"]').click();">
+                            <i class="fas fa-plus"></i> Upload Work
+                        </button>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Invoices Tab -->
+                <div id="invoices" class="tab-content">
+                    <div class="page-header">
+                        <h1>Invoices</h1>
+                    </div>
+                    
+                    <div class="invoices-container" id="invoices-container">
+                        <div class="empty-state">
+                            <i class="fas fa-file-invoice-dollar"></i>
+                            <h3>No Invoices Yet</h3>
+                            <p>You don't have any invoices yet. They will appear here once you complete projects.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Upload Work Tab -->
+                <div id="upload" class="tab-content">
+                    <div class="page-header">
+                        <h1>Upload Work</h1>
+                    </div>
+                    
+                    <div class="form-container">
+                        <form id="upload-form" method="POST" action="{{ url_for('upload_work') }}" enctype="multipart/form-data">
+                            <div class="form-group">
+                                <label for="work-title">Project Title</label>
+                                <input type="text" id="work-title" name="work-title" placeholder="Enter project title" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="work-description">Description</label>
+                                <textarea id="work-description" name="work-description" placeholder="Describe your project in detail..." required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="work-category">Category</label>
+                                <select id="work-category" name="category" required>
+                                    <option value="Design">Design</option>
+                                    <option value="Development">Development</option>
+                                    <option value="Writing">Writing</option>
+                                    <option value="Marketing">Marketing</option>
+                                    <option value="Data Science">Data Science</option>
+                                    <option value="Business">Business</option>
+                                    <option value="Photography">Photography</option>
+                                    <option value="Music">Music</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="business-name">Business Name</label>
+                                <input type="text" id="business-name" name="business-name" placeholder="Your business name">
+                            </div>
+                            <div class="form-group">
+                                <label for="contact-email">Contact Email</label>
+                                <input type="email" id="contact-email" name="contact-email" placeholder="Project contact email">
+                            </div>
+                            <div class="form-group">
+                                <label for="project-budget">Project Budget ($)</label>
+                                <input type="number" id="project-budget" name="budget" placeholder="Estimated budget">
+                            </div>
+                            <div class="form-group">
+                                <label for="deadline">Deadline</label>
+                                <input type="date" id="deadline" name="deadline">
+                            </div>
+                            <div class="form-group">
+                                <label for="project-duration">Duration (days)</label>
+                                <input type="number" id="project-duration" name="duration" placeholder="Estimated days to complete">
+                            </div>
+                            <div class="form-group">
+                                <label for="work-files">Upload Files</label>
+                                <input type="file" id="work-files" name="work-files" multiple>
+                                <small class="text-muted">You can upload multiple files (PDF, images, documents)</small>
+                            </div>
+                            <button type="submit">Publish Work</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Bid Modal -->
+    <div id="bid-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeBidModal()">&times;</span>
+            <h2>Place a Bid</h2>
+            <form id="bid-form" method="POST" action="{{ url_for('submit_bid') }}">
+                <input type="hidden" name="work_id" id="bid-work-id">
+                <div class="form-group">
+                    <label for="bid-amount">Bid Amount ($)</label>
+                    <input type="number" id="bid-amount" name="amount" step="0.01" min="1" required>
+                </div>
+                <div class="form-group">
+                    <label for="bid-message">Message (Optional)</label>
+                    <textarea id="bid-message" name="message" placeholder="Add a message to the client..."></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Submit Bid</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Chat Modal -->
+    <div id="chat-modal">
+        <div class="chat-modal-content">
+            <span class="close-chat" onclick="closeChatModal()">&times;</span>
+            <div class="chat-header">
+                <h2 id="chat-title">Chat with <span id="partner-name"></span></h2>
+                <div id="project-details-chat"></div>
+            </div>
+            <div id="chat-messages" class="chat-messages">
+                <div class="empty-state">
+                    <i class="fas fa-comments"></i>
+                    <h3>Start a conversation</h3>
+                    <p>Send your first message to begin chatting</p>
+                </div>
+            </div>
+            <div class="chat-input">
+                <input type="text" id="chat-message-input" placeholder="Type your message...">
+                <button id="chat-send-btn">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const socket = io();
+            let currentBidId = null;
+            let currentWorkId = null;
+            let currentPartnerId = null;
+            
+            // Tab navigation
+            const tabLinks = document.querySelectorAll('.nav-menu li');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    tabLinks.forEach(item => item.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    this.classList.add('active');
+                    const tabId = this.getAttribute('data-tab');
+                    document.getElementById(tabId).classList.add('active');
+                    
+                    // Load invoices when tab is opened
+                    if (tabId === 'invoices') {
+                        loadInvoices();
+                    }
+                });
+            });
+
+            // Upload work form submission
+            const uploadForm = document.getElementById('upload-form');
+            if (uploadForm) {
+                uploadForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    this.submit();
+                });
+            }
+
+            // Bid modal logic
+            const bidModal = document.getElementById('bid-modal');
+            
+            window.openBidModal = function(workId) {
+                document.getElementById('bid-work-id').value = workId;
+                bidModal.style.display = 'block';
+            }
+            
+            window.closeBidModal = function() {
+                bidModal.style.display = 'none';
+            }
+            
+            window.addEventListener('click', function(event) {
+                if (event.target === bidModal) {
+                    closeBidModal();
+                }
+            });
+
+            // Accept bid function
+            window.acceptBid = function(bidId) {
+                if (confirm('Are you sure you want to accept this bid?')) {
+                    fetch(`/accept_bid/${bidId}`, {
+                        method: 'POST'
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert(`Bid accepted! Invoice #${data.invoice_id} has been generated.`);
+                            location.reload();
+                        } else {
+                            alert('Error: ' + (data.error || 'Failed to accept bid'));
+                        }
+                    });
+                }
+            }
+
+            // Chat modal functions
+            window.openChatModal = function(partnerName, workId) {
+                currentWorkId = workId;
+                document.getElementById('partner-name').textContent = partnerName;
+                document.getElementById('chat-modal').style.display = 'block';
+                
+                if (workId) {
+                    fetch(`/get_work_details/${workId}`)
+                        .then(response => response.json())
+                        .then(work => {
+                            const detailsContainer = document.getElementById('project-details-chat');
+                            if (work && !work.error) {
+                                detailsContainer.innerHTML = `
+                                    <p><strong>Project:</strong> ${work.title}</p>
+                                    ${work.budget ? `<p><strong>Budget:</strong> $${work.budget}</p>` : ''}
+                                `;
+                            }
+                        });
+                }
+                
+                // Load messages for this work
+                loadChatMessages(workId);
+            }
+            
+            window.closeChatModal = function() {
+                document.getElementById('chat-modal').style.display = 'none';
+                currentBidId = null;
+                currentWorkId = null;
+            }
+            
+            window.addEventListener('click', function(event) {
+                if (event.target === document.getElementById('chat-modal')) {
+                    closeChatModal();
+                }
+            });
+            
+            function loadChatMessages(workId) {
+                // In a real implementation, you would fetch messages for this work
+                const messagesContainer = document.getElementById('chat-messages');
+                messagesContainer.innerHTML = '';
+                
+                // Sample messages - in real app, fetch from server
+                const messages = [
+                    { sender: 'client', text: 'Hello, I have a question about your bid', time: '10:30 AM' },
+                    { sender: 'you', text: 'Sure, what would you like to know?', time: '10:32 AM' },
+                    { sender: 'client', text: 'Can you complete this within 2 weeks?', time: '10:35 AM' }
+                ];
+                
+                if (messages.length === 0) {
+                    messagesContainer.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-comments"></i>
+                            <h3>Start a conversation</h3>
+                            <p>Send your first message to begin chatting</p>
+                        </div>
+                    `;
+                } else {
+                    messages.forEach(msg => {
+                        const messageEl = document.createElement('div');
+                        messageEl.className = `message ${msg.sender === 'you' ? 'sent' : 'received'}`;
+                        messageEl.innerHTML = `
+                            <div class="message-text">${msg.text}</div>
+                            <div class="message-time">${msg.time}</div>
+                        `;
+                        messagesContainer.appendChild(messageEl);
+                    });
+                }
+            }
+            
+            // Send chat message
+            document.getElementById('chat-send-btn').addEventListener('click', sendChatMessage);
+            document.getElementById('chat-message-input').addEventListener('keypress', e => {
+                if (e.key === 'Enter') sendChatMessage();
+            });
+            
+            function sendChatMessage() {
+                const input = document.getElementById('chat-message-input');
+                const message = input.value.trim();
+                
+                if (message) {
+                    const messagesContainer = document.getElementById('chat-messages');
+                    
+                    // Create message element
+                    const messageEl = document.createElement('div');
+                    messageEl.className = 'message sent';
+                    messageEl.innerHTML = `
+                        <div class="message-text">${message}</div>
+                        <div class="message-time">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
+                    `;
+                    
+                    messagesContainer.appendChild(messageEl);
+                    input.value = '';
+                    
+                    // Scroll to bottom
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                    
+                    // In real app, send to server via Socket.IO
+                    // socket.emit('send_message', { workId: currentWorkId, message });
+                }
+            }
+            
+            // Load invoices
+            function loadInvoices() {
+                fetch('/get_user_invoices')
+                    .then(response => response.json())
+                    .then(invoices => {
+                        const container = document.getElementById('invoices-container');
+                        
+                        if (invoices.length === 0) {
+                            container.innerHTML = `
+                                <div class="empty-state">
+                                    <i class="fas fa-file-invoice-dollar"></i>
+                                    <h3>No Invoices Yet</h3>
+                                    <p>You don't have any invoices yet. They will appear here once you complete projects.</p>
+                                </div>
+                            `;
+                            return;
+                        }
+                        
+                        let html = '<div class="invoices-grid">';
+                        
+                        invoices.forEach(invoice => {
+                            html += `
+                                <div class="invoice-card">
+                                    <div class="invoice-header">
+                                        <div>
+                                            <h3 class="invoice-title">${invoice.title}</h3>
+                                            <p class="invoice-id">Invoice #${invoice.id}</p>
+                                        </div>
+                                        <div>
+                                            <span class="invoice-status ${invoice.status === 'pending' ? 'status-pending' : 'status-paid'}">
+                                                ${invoice.status}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="invoice-details">
+                                        <div class="invoice-detail">
+                                            <strong>Amount</strong>
+                                            <span>$${invoice.amount}</span>
+                                        </div>
+                                        
+                                        <div class="invoice-detail">
+                                            <strong>Client</strong>
+                                            <span>${invoice.client_name}</span>
+                                        </div>
+                                        
+                                        <div class="invoice-detail">
+                                            <strong>Freelancer</strong>
+                                            <span>${invoice.freelancer_name}</span>
+                                        </div>
+                                        
+                                        <div class="invoice-detail">
+                                            <strong>Date</strong>
+                                            <span>${new Date(invoice.created_at).toLocaleDateString()}</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="invoice-actions">
+                                        <button class="btn btn-outline">Download PDF</button>
+                                        ${invoice.status === 'pending' ? 
+                                            `<button class="btn btn-primary">Pay Now</button>` : 
+                                            `<button class="btn btn-success">Paid</button>`
+                                        }
+                                    </div>
+                                </div>
+                            `;
+                        });
+                        
+                        html += '</div>';
+                        container.innerHTML = html;
+                    });
+            }
+            
+            // Initialize Socket.IO
+            socket.on('connect', () => {
+                console.log('Connected to server');
+            });
+            
+            socket.on('new_message', (data) => {
+                if (data.workId === currentWorkId) {
+                    addMessageToChat(data);
+                }
+            });
+            
+            function addMessageToChat(msg) {
+                const messagesContainer = document.getElementById('chat-messages');
+                
+                // Remove empty state if present
+                if (messagesContainer.querySelector('.empty-state')) {
+                    messagesContainer.innerHTML = '';
+                }
+                
+                const messageEl = document.createElement('div');
+                messageEl.className = `message ${msg.sender_id === {{ session['user_id'] }} ? 'sent' : 'received'}`;
+                messageEl.innerHTML = `
+                    <div class="message-text">${msg.message}</div>
+                    <div class="message-time">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
+                `;
+                
+                messagesContainer.appendChild(messageEl);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
+        });
+    </script>
+</body>
+</html>

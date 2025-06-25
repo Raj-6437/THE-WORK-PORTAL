@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.birds.min.js"></script>
+  <style>
+    .input-group input[type="file"] {
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
+      padding: 12px;
+      border-radius: 12px;
+      border: none;
+      width: 100%;
+    }
+    
+    .input-group input[type="file"]::file-selector-button {
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 8px;
+      margin-right: 10px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-title">The Work Portal</div>
+    <div class="header-links">
+      <a href="{{ url_for('landing') }}">Home</a>
+      <a href="{{ url_for('login') }}">Login</a>
+      <a href="{{ url_for('signup') }}">Sign up</a>
+      <a href="#">About Us</a>
+    </div>
+  </header>
+  <div id="vanta-bg" class="background"></div>
+
+  <div class="form-container large">
+    <div class="glass-card">
+      <h1 class="form-title">Create Account</h1>
+      
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">{{ message }}</div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+      
+      <form method="POST" action="{{ url_for('signup') }}" enctype="multipart/form-data">
+        <div class="input-group">
+          <input type="text" name="username" placeholder="Username" required>
+        </div>
+        <div class="input-group">
+          <input type="email" name="email" placeholder="Email" required>
+        </div>
+        <div class="input-group">
+          <input id="password" type="password" name="password" placeholder="Password" required>
+          <span id="toggle-password" class="eye-icon" onclick="togglePassword()">
+            <i class="fas fa-eye"></i>
+          </span>
+        </div>
+        <div class="input-group">
+          <input type="date" name="dob" placeholder="Date of Birth" required>
+        </div>
+        <div class="input-group">
+          <input type="text" name="profession" placeholder="Profession" required>
+        </div>
+        <div class="input-group">
+          <select name="education" required>
+            <option value="">Select Education Qualification</option>
+            <option>High School</option>
+            <option>Diploma</option>
+            <option>Bachelor of Arts</option>
+            <option>Bachelor of Science</option>
+            <option>Bachelor of Commerce</option>
+            <option>Engineering (B.E / B.Tech)</option>
+            <option>Medicine (MBBS / BDS)</option>
+            <option>Postgraduate (M.A / M.Sc / M.Com)</option>
+            <option>MBA / PGDM</option>
+            <option>Doctorate (Ph.D)</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label style="color: #fff; margin-bottom: 8px; display: block;">Profile Photo</label>
+          <input type="file" id="profile_photo" name="profile_photo" accept="image/*">
+        </div>
+        <button type="submit">Register</button>
+        <p class="form-footer">Already a member? <a href="{{ url_for('login') }}">Login</a></p>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    function togglePassword() {
+      const passwordField = document.getElementById('password');
+      const eyeIcon = document.getElementById('toggle-password');
+      
+      if (passwordField.type === 'password') {
+        passwordField.type = 'text';
+        eyeIcon.innerHTML = '<i class="fas fa-eye-slash"></i>';
+      } else {
+        passwordField.type = 'password';
+        eyeIcon.innerHTML = '<i class="fas fa-eye"></i>';
+      }
+    }
+
+    VANTA.BIRDS({
+      el: "#vanta-bg",
+      mouseControls: true,
+      touchControls: true,
+      gyroControls: false,
+      minHeight: 200.00,
+      minWidth: 200.00,
+      scale: 1.00,
+      scaleMobile: 1.00,
+      backgroundColor: 0x07192f,
+      backgroundAlpha: 1,
+      color1: 0xff0000,
+      color2: 0x00d1ff,
+      colorMode: "lerpGradient",
+      quantity: 5,
+      birdSize: 1,
+      wingSpan: 30,
+      speedLimit: 5,
+      separation: 20,
+      alignment: 20,
+      cohesion: 20
+    });
+  </script>
+</body>
+</html>
